@@ -1,0 +1,140 @@
+package mayintarlasi;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class MineSweeper {
+	
+	static void run() {
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Satir sayisini giriniz");
+		int satir= scan.nextInt();
+		System.out.println("Sutun sayisini giriniz");
+		int sutun = scan.nextInt();
+		char[][] kullaniciTablosu = kullaniciTablosu(satir, sutun);
+		char[][] asiltablo = asilTablo(satir, sutun);
+		boolean win =false;
+		boolean loss= false;
+		boolean select=true;
+		while(!win && !loss) {
+			print(kullaniciTablosu);
+			select=true;
+			while(select) {
+				System.out.println("Satir seciminizi yapiniz");
+				satir=scan.nextInt();
+				System.out.println("Sutun seciminizi yapiniz");
+				sutun = scan.nextInt();
+				select = isSelect(satir, sutun, kullaniciTablosu);
+			}
+			loss = isLoss(asiltablo, satir, sutun);
+				if(loss) {
+					System.out.println("Oyunu kaybettiniz");
+					print(asiltablo);
+					break;
+				}
+			mayinSayma(kullaniciTablosu, asiltablo, satir, sutun);
+			win = isWin(asiltablo);
+			if(win) {
+				System.out.println("Oyunu kazandınız");
+				print(asiltablo);
+				break;
+			}
+			System.out.println("#######################");
+		}
+		
+	}
+	
+	
+	
+	static char[][] kullaniciTablosu(int a, int b){
+		char[][] dizi = new char[a][b];
+		for(int i=0; i<dizi.length; i++) {
+			for(int k=0; k<dizi[0].length; k++) {
+				dizi[i][k] = '_';
+			}
+		}
+		return dizi;
+	}
+	static char[][] asilTablo(int a,int b){
+		char dizi[][] = new char[a][b];
+		int mayinAdedi = a*b/4;
+		dizi = kullaniciTablosu(a, b);
+		for(int i=0; i<mayinAdedi;i++) {
+			Random rnd = new Random();
+			int satir = rnd.nextInt(a);
+			int sutun= rnd.nextInt(b);
+			if(dizi[satir][sutun] == '_') {
+				dizi[satir][sutun] = '*';
+			} else {
+				i--;
+			}
+		}
+		return dizi;
+	}
+	static void print(char[][] dizi) {
+		for(int i=0; i<dizi.length; i++) {
+			for(int k=0; k<dizi[0].length; k++) {
+				System.out.print(dizi[i][k] + " ");
+			}
+			System.out.println();
+		}
+	}
+	static boolean isWin(char[][] asilTablo) {
+		int count=0;
+		for(int i=0; i<asilTablo.length;i++) {
+			for(int j=0; j<asilTablo[0].length;j++) {
+				if(asilTablo[i][j]=='_') {
+					count++;
+					break;
+				}
+			}
+		}
+		if(count==0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	static boolean isLoss(char[][] asilTablo, int satir, int sutun) {
+		if(asilTablo[satir][sutun]=='*') {
+			return true;
+		} else return false;
+	}
+	static boolean isSelect(int a,int b, char[][] kullaniciTablosu) {
+		if(a<0 ||a>kullaniciTablosu.length-1 || b<0 || b>kullaniciTablosu[0].length-1 ) {
+			System.out.println("Hatali degerler girdiniz");
+			return true;
+		}
+		if(kullaniciTablosu[a][b] == '_') {
+			return false;
+		} else {
+			System.out.println("Aynı degeri tekrar giremezsiniz");
+			return true;
+		}
+	}
+	static void mayinSayma(char[][] kullaniciTablosu, char[][] asilTablo, int satir, int sutun) {
+		int count=0;
+		for(int i=0; i<asilTablo.length;i++) {
+			for(int k=0; k<asilTablo[0].length; k++) {
+				if(asilTablo[i][k]=='*') {
+					if(i==satir && (k==sutun-1 || k==sutun+1)) {
+						count++;
+					}
+					if(k==sutun && (i==satir-1 || i==satir+1)) {
+						count++;
+					}
+					if((i==satir-1 && k==sutun-1) || (i==satir+1 && k==sutun+1 )) {
+						count++;
+					}
+					if((i==satir-1 && k==sutun+1) || (i==satir+1 && k==sutun-1 )) {
+						count++;
+					}
+				}
+			}
+		}
+		String a = Integer.toString(count);
+		char b = a.charAt(0);
+		kullaniciTablosu[satir][sutun] = b;
+		asilTablo[satir][sutun]=b;
+	}
+}
